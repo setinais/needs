@@ -4,7 +4,18 @@
 
 	$configs->env->add('development');
 
-	
+	$configs->env->development->baseURI = '/needs/';
+
+	$configs->env->development->database->setConnectionData([
+			'driver' => 'mysql',
+			'host' => 'localhost',
+			'user' => 'root',
+			'password' => '',
+			'dbname' => 'needs',
+			'charset' => 'utf8'
+		]);
+
+	/*
 		//Globais
 		$configs->title = 'Titulo customizado';
 
@@ -63,6 +74,6 @@
 			'from_mail' => 'email@remetente.com.br'
 		]);
 	
-
+*/
 
 	return $configs;

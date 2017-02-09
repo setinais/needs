@@ -1,16 +1,16 @@
 {
-    "name": "Bruno/hxphp",
+    "name": "Vinnicyus/hxphp",
     "require": {
         "php-activerecord/php-activerecord": "dev-master"
     },
     "authors": [
         {
-            "name": "Bruno Campos Santos",
-            "email": "bruno@hxphp.com.br"
+            "name": "Vinnicyus Carvalho",
+            "email": "vinnciyus@vinnilog.com.br"
         },
         {
-            "name": "Gilglécio Santos",
-            "email": "gilglecio@hxphp.com.br"
+            "name": "Luciano Guida",
+            "email": "lucianoguida10@gmail.com"
         }
     ],
     "autoload": {
