@@ -1,0 +1,37 @@
+.color{
+	width: 100%;
+	z-index: 1000; 
+	height: 120px;
+	background-color: green;
+}
+.colorFooter{
+	width: 100%;
+	z-index: 1000; 
+	background-color: green;
+	height: 60px;
+}
+.mini_menu{
+	float: right;
+	margin-top: 3%;
+	z-index: 1000;
+}
+.footer_org{
+	margin-top: 1%;
+	z-index: 1000;
+}
+.popup-logon{
+	position: absolute;
+	display: none;
+	z-index: 1000;
+}
+.popup-l{
+	position: relative;
+	display: none;
+	z-index: 1000;
+}
+.perfil{
+    border-radius: 1000px;
+}
+#header{
+	margin-bottom: 5%;
+}

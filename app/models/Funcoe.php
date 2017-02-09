@@ -1,7 +1,7 @@
 <?php 
-class Role extends \HXPHP\System\Model{
+class Funcoe extends \HXPHP\System\Model{
 	static $has_many = array(
-		array('users')
+		array('usuarios')
 		);
 
 	public static function getRoles(){

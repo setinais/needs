@@ -1,12 +1,12 @@
 <?php
-	class State extends \HXPHP\System\Model{
+	class Estado extends \HXPHP\System\Model{
 
 		/**
 		 * Configuração para a associação entre tabelas
 		 * @var array
 		 */
 		static $has_many = array(
-		 	array('users')
+		 	array('usuarios')
 		);
 
 		/**

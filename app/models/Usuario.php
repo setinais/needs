@@ -1,27 +1,50 @@
 <?php
-class User extends \HXPHP\System\Model{
+class Usuario extends \HXPHP\System\Model{
 
 		/**
 		 * Configuração para a associação entre tabelas
 		 * @var array
 		 */
-		static $belongs_to = array(
-			array('state'),
-			array('role'),
-			array('email'),
-			['redes_social']
-			);
+		static $belongs_to = [
+			['estado'],
+			['funcoe'],
+			['email']
+			//['redes_social']
+			];
 
 		/**
 		 * Configuração para a associação entre tabelas
 		 * @var array
 		 */
-		static $has_many = array(
-			array('login_attempts'),
-			array('lost_passwords')
-			
-			);
+		static $has_many = [
+			['tentativas_logon'],
+			['senha_perdida']
+			];
 
+		static $validates_presence_of = [
+			[
+			'nome',
+			'message' => 'O <strong>Nome</strong> é um campo obrigatório.'
+			],
+			[
+			'usuario',
+			'message' => '<strong>Usuario</strong> é um campo obrigatório.'
+			],
+			[
+			'senha',
+			'message' => '<strong>Senha</strong> é um campo obrigatório.'
+			],
+			[
+			'telefone',
+			'mnessage' => '<strong>Telefone</strong> é um campo obrigatório.'
+			]
+		];
+		static $validate_uniqueness_of = [
+			[
+				['username'],
+				'message' => 'Já exixte um usuário cadastrado com este Username.'
+			],
+		];
 		/**
 		 * Método responsável por retornar um array com as IDs e nomes dos usuários
 		 * @return array Array tratado para o PFBC
@@ -32,14 +55,49 @@ class User extends \HXPHP\System\Model{
 				''=>'Selecione...'
 				);
 			foreach ($users as $user) {
-				$options[$user->id]=$user->full_name;
+				$options[$user->id]=$user->nome;
 			}
 			return $options;
 		}
-		public static function inserirUser($attributos){
-			$User = new User($attributos);
-			if($User->save()){ return true;}else{ return false; }
+		public static function cadastrarUsuario($post){
+
+			$usuario = new \stdClass;
+			$usuario->user = null;
+			$usuario->status = false;
+			$usuario->errors = [];
+
+			//Pesquisar id da Função
+			$funcoe = Funcoe::find_by_funcao($post['funcoe']);
+			$email = Email::find_by_email($post['email_id']);
+			if(!empty($email)){
+				array_push($usuario->errors, '<strong>Email</strong> já esta cadastrado.');
+				return $usuario;
+			}else{
+				$email = Email::cadastrarEmail($post['email_id']);
+				$post['email_id'] = Email::find_by_email($post['email_id'])->id;
+			}
+
+			$senha = \HXPHP\System\Tools::hashHX($post['senha']);
+			$post = array_merge($post, [
+				'funcoe_id' => $funcoe->id,
+				'status' => 1,
+				'senha' => $senha['password'],
+				'salt' => $senha['salt'],
+				]);
 			
+			$cadastrar = self::create($post);
+
+			if($cadastrar->is_valid()){
+				$usuario->user = $cadastrar;
+				$usuario->status = true;
+				return $usuario;
+			}
+
+			$errors = $cadastrar->errors->get_raw_errors();
+			foreach ($errors as $campo => $messagem) {
+				array_push($usuario->errors, $messagem[0]);
+			}
+			return $usuario;
 		}
 		public function searchResult($search){
 			$final = $this->tratamentoSearch($search);
@@ -48,7 +106,7 @@ class User extends \HXPHP\System\Model{
 					$retorno = Profile::find_by_user_id($key);
 					if(!empty($retorno)){
 						if(Auth::login_check()){
-							$url = 'informacoes("'.SITE.'home/Pesquisador_Extensionista/'.$retorno->id.'");';
+							$url = 'informacoes("'.BASE.'home/Pesquisador_Extensionista/'.$retorno->id.'");';
 						}else{$url = "showLogin();";
 						}
 							$pesquisas[$key] = "
@@ -59,7 +117,7 @@ class User extends \HXPHP\System\Model{
 										</button>
 									</div>
 									<div class='media-body'>
-										<h4 class='media-heading'>".$retorno->user->full_name." ".$retorno->user->second_name."</h4>
+										<h4 class='media-heading'>".$retorno->user->nome." ".$retorno->user->sobrenome."</h4>
 										<p><strong>Aréa de Atuação:</strong> ".$retorno->formacao."</p>
 										<p><strong>Instituição de Ensino:</strong> ".$retorno->campus."</p>
 									</div>
@@ -78,8 +136,8 @@ class User extends \HXPHP\System\Model{
 			$search_array = explode(" ",$search);
 			//$tamanho_pesquisa_2 = intval(strlen($search) / 2);
 			for($v=0;$v<count($search_array);$v++){
-				$explode_searchNome[$v] = $this->searchNome($search_array[$v],"full_name");
-				$explode_searchSecond[$v] = $this->searchNome($search_array[$v],"second_name");
+				$explode_searchNome[$v] = $this->searchNome($search_array[$v],"nome");
+				$explode_searchSecond[$v] = $this->searchNome($search_array[$v],"sobrenome");
 			}
 			$search_final = array_merge($explode_searchNome,$explode_searchSecond);
 			$search_final = array_filter($search_final);
@@ -129,18 +187,18 @@ class User extends \HXPHP\System\Model{
 			$result = self::all();
 			$idss = [];
 			foreach ($result as $key => $value) {
-				$full_name[$value->id] = $this->strLowCase($value->$campo);
-				$full_name[$value->id] = explode(" ",$full_name[$value->id]);
-				//$full_name[$key+1] = str_split($full_name[$key+1]);
+				$nome[$value->id] = $this->strLowCase($value->$campo);
+				$nome[$value->id] = explode(" ",$nome[$value->id]);
+				//$nome[$key+1] = str_split($nome[$key+1]);
 				$idss[] .= $value->id;
 			}
 			
 			for($y=0;$y<count($search);$y++){
 				for($j=0;$j<count($idss);$j++) {
-					if(!empty($full_name[$idss[$j]])){
-						for($v=0;$v<count($full_name[$idss[$j]]);$v++){
-							if($full_name[$idss[$j]][$v] == $search){
-								$ids[$idss[$j]][$campo] = $full_name[$idss[$j]][$v];
+					if(!empty($nome[$idss[$j]])){
+						for($v=0;$v<count($nome[$idss[$j]]);$v++){
+							if($nome[$idss[$j]][$v] == $search){
+								$ids[$idss[$j]][$campo] = $nome[$idss[$j]][$v];
 								
 							}
 						}

@@ -60,7 +60,7 @@ class App
 	 */
 	public function run()
 	{
-
+		
 		/**
 		 * Variáveis
 		 */

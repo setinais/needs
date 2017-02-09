@@ -11,7 +11,7 @@ class HomeController extends Controller{
 
 		$search = new User;
 		$data = $this->search($_GET['search'],$search);
-		$data['endereco'] = SITE."home/search/";
+		$data['endereco'] = BASE."home/search/";
 		$this->view('Search',$data,true,'','',array(CSS.'index.css'),array(JS.'Pesquisa/funcoes.js'));
 	}
 }

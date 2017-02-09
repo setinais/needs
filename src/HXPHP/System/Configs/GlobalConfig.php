@@ -40,7 +40,7 @@ class GlobalConfig
 		$this->controllers->notFound = 'Error404Controller';
 
 		//General
-		$this->title = 'HXPHP Framework';
+		$this->title = 'DemandaAi';
 
 		return $this;
 	}

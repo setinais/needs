@@ -25,9 +25,9 @@
     			$auth->login($super_global["usuario"],$super_global["senha"]);
     			if($auth->check()){
                     if(empty($_REQUEST['pesquisa'])){
-    				    $this->redirectTo(SITE."home");
+    				    $this->redirectTo(BASE."home");
                     }else{
-                        $this->redirectTo(SITE."home/search/?search=".$_REQUEST['pesquisa']);
+                        $this->redirectTo(BASE."home/search/?search=".$_REQUEST['pesquisa']);
                     }
     			}else{
     				$data["message"]=$auth->getErrors();
@@ -39,7 +39,7 @@
             ));
         }
         public function loginGoogleAction($chave,$id){
-                $data['dados'] = "<script>validarToken('".$chave."','".SITE."');</script>";
+                $data['dados'] = "<script>validarToken('".$chave."','".BASE."');</script>";
                 $this->view('Xrhauth',$data,true,'Generic','',[CSS.'animate.css',CSS.'index.css'],[JS.'Validacoes/ValidarLogonGoogle.js']);
             
         }

@@ -47,8 +47,8 @@
 		$configs->env->development->menu->setMenus([
 			'Home/home' => '%siteURL%',
 			'Subpasta/folder-open' => [
-				'Home/home' => '%baseURI%/admin/have-fun/',
-				'Teste/home' => '%baseURI%/admin/index/',
+				'Home/home' => '%siteURI%/admin/have-fun/',
+				'Teste/home' => '%siteURI%/admin/index/',
 			]
 		]);
 
@@ -58,9 +58,9 @@
 		//Configurações de Ambiente - Produção
 		$configs->env->add('production');
 
-		$configs->env->production->baseURI = '/';
+		$configs->env->production->siteURI = '/';
 
-		$configs->env->production->database->setConnectionData([
+		$configs->env->production->datasite->setConnectionData([
 			'driver' => 'mysql',
 			'host' => 'localhost',
 			'user' => 'usuariodobanco',

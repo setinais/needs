@@ -1,22 +1,125 @@
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-custom">
-                <div class="panel-heading">
-                    <a id="logo" href="<?php echo BASE; ?>">
-                        <img class="img-responsive" src="<?php echo IMG; ?>hxphp-logo.png" alt="">
-                    </a> <br>
-                    <?php echo (isset($this->menu) ? $this->menu : ''); ?>
-                </div>
-                <div class="panel-body">
-                    <?php 
-                        $this->partial('message', array(
-                            'msg' => 'Uhull! Você instalou e configurou o HXPHP Framework com sucesso!'
-                        )); 
-                    ?>
-                    <p>
-                        Agora acesse a <a class="btn btn-success btn-xs" href="http://www.hxtutors.com.br/curso/dominando-o-hxphp-framework/" title="Acesse o curso completo sobre HXPHP" target="_blank">área de membros</a> e assista ao nosso curso oficial para dominar completamente esta poderosa ferramenta.
-                    </p>
-                </div>
-            </div>
-        </div>
+
+
+<script src="https://apis.google.com/js/api:client.js"></script>
+<script>
+  var googleUser = {};
+  var startApp = function() {
+    gapi.load('auth2', function(){
+      // Retrieve the singleton for the GoogleAuth library and set up the client.
+      auth2 = gapi.auth2.init({
+        client_id: '1009135910247-k8693mh4cljccnju8nd2q21lpn3mu5i0.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
+        // Request scopes in addition to 'profile' and 'email'
+        //scope: 'additional_scope'
+      });
+      attachSignin(document.getElementById('customBtn'));
+    });
+  };
+
+  function attachSignin(element) {
+    console.log(element.id);
+    auth2.attachClickHandler(element, {},
+      function(googleUser) {
+       window.location.href = "<?=BASE?>login/loginGoogle/"+googleUser.getAuthResponse().id_token+"/"+googleUser.getBasicProfile().getId()+"/";
+       document.getElementById('name').innerText = "Signed in: " +
+       googleUser.getBasicProfile().getName();
+     }, function(error) {
+      alert(JSON.stringify(error, undefined, 2));
+    });
+  }
+</script>
+<style type="text/css">
+  #customBtn:hover {
+    cursor: pointer;
+  }
+  span.label {
+    font-family: serif;
+    font-weight: normal;
+  }
+  span.icon {
+
+  }
+  span.buttonText {
+
+  }
+</style>
+  <!-- In the callback, you would hide the gSignInWrapper element on a
+  successful sign in -->
+  
+  <script>startApp();</script>
+<section id="index-container col-md-12 col-xs-12 col-sm-12">
+  <div class="row">
+    <div class="mini_menu">
+      <a href="<?=BASE?>usuario/verificarEndereco/cadastroDemandante/" class="btn btn-success">Cadastre-se</a>
+      <button onclick="showLogin();" class="btn btn-success">Login</button>
     </div>
+  </div>
+  <div id="popup-log" class="popup-logon col-md-3 col-md-offset-4">
+    <div class="panel panel-success animated flipInY ">
+      <div class="panel-heading">
+        <h3 class="panel-title text-center">
+        Logon
+        </h3>
+      </div>
+    <div class="panel-body">
+    <form action="<?=BASE?>login/logar/" method="POST" class="form-horizontal" role="form">
+      <div class="form-group">
+        <div class="col-md-12">
+          <label for="usuario">Login</label>
+            <input type="text" required="required" name="usuario" placeholder="Usuário..." class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-12">
+          <label for="senha">Password</label>
+            <input type="password" id="senha" name="senha" placeholder="Senha" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-3">
+          <button class="btn btn-success">Logar</button>
+        </div>
+        <div class="col-md-3 col-md-offset-4">
+          <button type="button" onclick="hiddenLogin();" class="btn btn-danger">Fechar</button>
+        </div>
+        <div id="gSignInWrapper" >
+          <span class="label">Sign in with:</span>
+          <div id="customBtn" class="customGPlusSignIn btn btn-default">
+            <span class="icon"></span>
+            <span class="buttonText">Google</span>
+          </div>
+        </div>
+        <div id="name"></div>
+      </div>
+    </form>
+</div>
+</div>
+</div>
+<div class="row">
+ <div class="full bg" id="header">
+  <div class="container">
+   <div class="col-md-8 col-md-offset-2">
+    <a href="<?=BASE;?>" class="logo col-md-offset-4 col-md-4">
+     <div class="col-md-10 col-md-offset-1">
+      <img class="img-responsive" src="<?=IMG;?>ifto.jpg" alt="">
+    </div>
+  </a>
+  <form action="<?=BASE?>index/search/" method="get" role="search">
+    <div class="row">
+     <div class="col-md-12">
+      <div class="input-group">
+        <input type="text" class="form-control" name="search" placeholder="Qual a sua Dor?"/>
+        <span class="input-group-btn">
+         <button id=" btn-danger-logon" class="btn btn-success"><i class="fa fa-search"></i></button>
+       </span>
+
+     </div>
+   </div>
+ </div>
+</form>
+</div> 
+</div>
+</div>
+</div>
+
+</section>

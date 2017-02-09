@@ -15,7 +15,7 @@
             }else{
                 $username=trim($_REQUEST['username']);
                 if(!is_null(User::find_by_username($username))){
-                    $lost_password=new Lost_Password($username,SITE.'esqueci-a-senha/redefinir/');
+                    $lost_password=new Lost_Password($username,BASE.'esqueci-a-senha/redefinir/');
                     $data['message']=$lost_password->results();
                 }else{
                     $data['message']=array(

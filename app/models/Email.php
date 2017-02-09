@@ -5,8 +5,8 @@
 class Email extends \HXPHP\System\Model
 {
 	static $belongs_to = array(
-		array('user'),
-		array('chave')
+		array('usuario')
+		//array('chave')
 		);
 	public static function verificarEmail($email){
 			$user_exist = self::find_by_email($email);

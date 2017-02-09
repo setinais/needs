@@ -1,51 +1,46 @@
 <?php
-class RegisterController extends Controller{
-  public function indexAction(){
-       $data['estados'] = State::getSelectStates();
-       $data['request'] = null;
-       $this->view('CadastroIndex',$data,true,'Generic','',array(
-         CSS.'index.css',
-         CSS.'Cadastro/Cadastro.css',
-         CSS.'animate.css'
-         ),
-       array(
-        JS.'Validacoes/ValidacaoCadastro.js',
-        ));
+class UsuarioController extends \Hxphp\System\Controller{
+
+    private $callback = null;
+    private $chave;
+    public function verificarEnderecoAction($pagina,$chave = null){
+        if(!is_null($chave)){
+            $this->chave = $chave;
+       }
+       if(empty($_REQUEST)){
+            $this->callback = null;
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina);
+       }else{
+            $this->callback = $_REQUEST;
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina);
+       }
+
     }
-    public function tratamentoCadastroAction(){
-        if(empty($_REQUEST)){
-            $this->redirectTo(SITE);
-        }
-        $cadastrar = new Validator($_REQUEST);
-        $cadastrar->field_filledIn($_REQUEST);
-        if($cadastrar->valid){
-            $senha = Tools::hashHX($_REQUEST['password']);
-            $_REQUEST['password'] = $senha['password'];
-            $_REQUEST['salt'] = $senha['salt'];
-            $_REQUEST['status'] = 1;
-            $_REQUEST['role'] = 2;
-            $email_id = Email::cadastrarEmail($_REQUEST['Email']);
-            $attributes = array('full_name' => $_REQUEST['Nome'],'second_name' => $_REQUEST['Sobrenome'], 'username' => $_REQUEST['Usuario'],'state_id' => $_REQUEST['Estado'], 'password' => $_REQUEST['password'], 'salt' => $_REQUEST['salt'], 'obs' => 'Null', 'status' => $_REQUEST['status'], 'role_id' => $_REQUEST['role'],'email_id' => $email_id->id,'telefone' => $_REQUEST['telefone']);
-            if(User::inserirUser($attributes)){
-                $this->redirectTo(SITE);
-            }else{
-                echo "Sem conexão com a Internet, tente mais tarde!";
+    public function cadastroDemandanteAction(){
+
+        $estados = Estado::getSelectStates();
+        $this->view->setFile('CadastroDemandante')->setHeader('HeaderGeneric')
+        ->setAssets('css',[$this->configs->baseURI.'public/css/index.css',$this->configs->baseURI.'public/css/Cadastro.css'])
+        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados);
+
+         $this->request->setCustomFilters([
+            'email' => FILTER_VALIDATE_EMAIL
+            ]);
+            $post = $this->request->post();
+        if(!empty($post)){
+            
+            $post['funcoe'] = 'Demandante';
+            $cadastrarUser = Usuario::cadastrarUsuario($post);
+            if($cadastrarUser->status === false){
+                $this->load('Helpers\Alert',[
+                    'danger',
+                    'Ops! Não foi possivel efetuar seu cadastro. Verifique os erros abaixo',
+                    $cadastrarUser->errors
+                    ]);
             }
-        }else{
-            $data['request'] = $_REQUEST;
-            $data['message'] = $cadastrar->getErrors();
-            $data['estados'] = State::getSelectStates();
-            $this->view('CadastroIndex',$data,true,'Generic','',array(
-                CSS.'index.css',
-                CSS.'Cadastro/Cadastro.css'
-                ),
-            array(
-                JS.'Validacoes/ValidacaoCadastro.js',
-                JS.'Validacoes/IfReload.js'
-                ));
         }
     }
-    public function tratamentoCadastroPEAction(){
+    public function cadastroPEAction(){
         $cadastrar = new Validator($_REQUEST);
         $cadastrar->field_filledIn($_REQUEST);
         if($cadastrar->valid && Email::verificarEmail($_REQUEST['Email'])){
@@ -56,7 +51,7 @@ class RegisterController extends Controller{
                 $email_id = Email::cadastrarEmail($_REQUEST['Email']);
                 $attributes = array('full_name' => $_REQUEST['Nome'],'second_name' => $_REQUEST['Sobrenome'], 'username' => $_REQUEST['Usuario'],'state_id' => $_REQUEST['Estado'], 'password' => $_REQUEST['password'], 'salt' => $_REQUEST['salt'], 'obs' => 'Null', 'status' => $_REQUEST['status'], 'role_id' => $_REQUEST['role'],'email_id' => $email_id->id,'telefone' => $_REQUEST['telefone']);
                 if(User::inserirUser($attributes)){
-                    $this->redirectTo(SITE);
+                    $this->redirectTo(BASE);
                 }else{
                     echo "Sem conexão com a Internet, tente mais tarde!";
                 }
@@ -65,7 +60,7 @@ class RegisterController extends Controller{
             $data['message'] = $cadastrar->getErrors();
             $data['estados'] = State::getSelectStates();
             $data['roles'] = Role::getRoles();
-            $this->view('CadastroPE-P1',$data,true,'Generic','',array(
+            $this->view('CadastroPE',$data,true,'Generic','',array(
                 CSS.'index.css'
                 ),
             array(
@@ -76,7 +71,7 @@ class RegisterController extends Controller{
     public function solicitarTokenAction($email){
         if(Email::verificarEmail($email)){
             $token = Tools::newToken();
-            $status = $this->email->enviar($email,"Cadastro de Demandande/Extensionista","\nFaça seu cadastro atraves do link:\n".SITE."register/token/".$token,["remetente" => REMETENTE,"email" => EMAIL_REMETENTE]);
+            $status = $this->email->enviar($email,"Cadastro de Demandande/Extensionista","\nFaça seu cadastro atraves do link:\n".BASE."register/token/".$token,["remetente" => REMETENTE,"email" => EMAIL_REMETENTE]);
             //$status[0] <- coloca no if;
             if(true){
                 Chave::cadastrarSolicitcaoToken($email,$token);
@@ -90,7 +85,7 @@ class RegisterController extends Controller{
     }
     public function tokenAction($token){
         if(empty($token)){
-            $this->redirectTo(SITE);
+            $this->redirectTo(BASE);
         }else{
             $info_token = Chave::getChave($token);
             if(!empty($info_token)){
@@ -100,21 +95,21 @@ class RegisterController extends Controller{
                     $data['roles'] = Role::getRoles();
                     $data['token'] = $token;
                     $data['email'] = $info_token->email->email;
-                    $this->view('CadastroPE-P1',$data,true,'Generic','',[CSS.'index.css'],[JS.'Validacoes/ValidacaoCadastroPE-EP.js']);
+                    $this->view('CadastroPE',$data,true,'Generic','',[CSS.'index.css'],[JS.'Validacoes/ValidacaoCadastroPE-EP.js']);
                 }else{
-                    $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Expirada!</strong> Solicitar uma nova <a href='".SITE."cadastro/solicitarNovoToken/' class='alert-link'>clique aqui!</a><div>";
+                    $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Expirada!</strong> Solicitar uma nova <a href='".BASE."cadastro/solicitarNovoToken/' class='alert-link'>clique aqui!</a><div>";
                     $this->view('Errors',$data,true,'Generic','',[CSS.'index.css']);
                 }
             }else{
-                $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Inválida!</strong> Ir para o <a href='".SITE."' class='alert-link'>Inicio</a><div>";
+                $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Inválida!</strong> Ir para o <a href='".BASE."' class='alert-link'>Inicio</a><div>";
                     $this->view('Errors',$data,true,'Generic','',[CSS.'index.css']);
-                //$this->redirectTo(SITE);
+                //$this->redirectTo(BASE);
             }
         }
     }
     public function validandoTokenAction($token){
          if(empty($token)){
-            $this->redirectTo(SITE);
+            $this->redirectTo(BASE);
         }else{
             $info_token = Chave::getChave($token);
             if(!empty($info_token)){
@@ -139,7 +134,7 @@ class RegisterController extends Controller{
                     $attributes = array('full_name' => $_REQUEST['Nome'],'second_name' => $_REQUEST['Sobrenome'], 'username' => $_REQUEST['Usuario'],'state_id' => $_REQUEST['Estado'], 'password' => $password, 'salt' => $salt, 'obs' => 'Null', 'status' => $status, 'role_id' => $_REQUEST['role'],'email_id' => $email_id->id,'telefone' => $_REQUEST['telefone'], 'redes_social_id' => $id_redes_social);
                     if(User::inserirUser($attributes)){
                         Chave::bloqueioDeUso($token);
-                        //$this->redirectTo(SITE);
+                        //$this->redirectTo(BASE);
                     }else{
                         $texto=[
                             'danger',
@@ -152,16 +147,16 @@ class RegisterController extends Controller{
                         $data['roles'] = Role::getRoles();
                         $data['token'] = $token;
                         //$data['email'] = $_REQUEST['Email'];
-                        $this->view('CadastroPE-P1',$data,true,'Generic','',[CSS.'index.css'],[JS.'Validacoes/ValidacaoCadastroPE-EP.js']);
+                        $this->view('CadastroPE',$data,true,'Generic','',[CSS.'index.css'],[JS.'Validacoes/ValidacaoCadastroPE-EP.js']);
                     }
                 }else{
-                    $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Expirada!</strong> Solicitar uma nova <a href='".SITE."cadastro/solicitarNovoToken/' class='alert-link'>clique aqui!</a><div>";
+                    $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Expirada!</strong> Solicitar uma nova <a href='".BASE."cadastro/solicitarNovoToken/' class='alert-link'>clique aqui!</a><div>";
                     $this->view('Errors',$data,true,'Generic','',[CSS.'index.css']);
                 }
             }else{
-                $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Inválida!</strong> Ir para o <a href='".SITE."' class='alert-link'>Inicio</a><div>";
+                $data['erro'] = "<div class='alert alert-danger' role='alert'><strong>Chave Inválida!</strong> Ir para o <a href='".BASE."' class='alert-link'>Inicio</a><div>";
                     $this->view('Errors',$data,true,'Generic','',[CSS.'index.css']);
-                //$this->redirectTo(SITE);
+                //$this->redirectTo(BASE);
             }
         }
     }
@@ -180,7 +175,7 @@ class RegisterController extends Controller{
     </div>
     <script>
         function solicitar(){
-            endereco = "'.SITE.'cadastro/solicitarToken/";
+            endereco = "'.BASE.'cadastro/solicitarToken/";
             email = $("#email_institucional").val();
             email = email+"@ifto.edu.br";
     $.ajax({
