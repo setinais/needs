@@ -1,0 +1,148 @@
+
+<section id="login-container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2" id="login-wrapper">
+			<div class="panel panel-success animated flipInY">
+				<div class="panel-heading">
+					<h3 class="panel-title text-center">     
+						Cadastro de Usuario
+					</h3>      
+				</div>
+				<div class="panel-body">
+					<div class="form-group col-md-12 col-xs-12 col-sm-12 col-lg-12">
+						<div class="col-md-4">
+							<h4 class="active">* Campos Obrigatorios</h4>
+							<div id="errors_campus"></div>
+						</div>
+						<div id="parte_1">
+							<div class="col-md-offset-4 col-md-4">
+								<div class="row"><b>Cadastrar com:</b></div>
+								<div class="row g-signin2" data-onsuccess="onSignIn"></div>	
+								<a href="#" class="row g-signin1" onclick="signOut();">Sair do Google</a>
+							</div>
+							<div class="row col-md-offset-5 col-md-4"><span class="label label-primary">-----OU-----</span></div>
+						</div>
+						
+						<form method="post" class="form-horizontal" action="<?=SITE?>register/validandoToken/<?=$view_token;?>" role="form">
+							<div class="form-group"></div>
+							<div class="form-group has-feedback">
+								<div id="valida_nome" class="col-md-4 ">
+									<label class="control-label" for="username">Nome: *</label>
+									<input type="text" required="required" class="form-control" id="nome" name="Nome" value="<?=$view_request['Nome'];?>" placeholder="Nome Completo" onblur="validaNome(this.value);" />
+									<span id="valida_nome_icon" class='form-control-feedback' aria-hidden='true'></span>
+
+
+								</div>
+								
+								<div id="valida_sobre" class="col-md-8">
+									<label class="control-label" for="username">Sobrenome: *</label>
+									<input value="<?=$view_request['Sobrenome'];?>" type="text" required="required" class="form-control" id="sobrenome" name="Sobrenome" onblur="validaSobre(this.value);" placeholder="Nome Completo"/>
+									<span id="valida_sobre_icon" class='form-control-feedback' aria-hidden='true'></span>
+								</div>
+							</div>
+							<div id="dados_logon" class="form-group has-feedback">
+								<div id="valida_usu" class="col-md-3">
+									<label for="username">Usuario: *</label>
+									<input value="<?=$view_request['Usuario'];?>" type="text" class="form-control" id="usuario" name="Usuario" placeholder="Usuário" onblur="validaUsu(this.value);" />
+									<span id="valida_usu_icon" class='form-control-feedback' aria-hidden='true'></span>	
+								</div>
+								<div id="valida_senha" class="col-md-3">
+									<label for="password">Senha: *</label>
+									<input value="<?=$view_request['Senha'];?>" type="password"  class="form-control" id="senha" name="Senha" placeholder="Senha" onblur="validaSenha(this.value);"/>
+									<span id="valida_senha_icon" class='form-control-feedback' aria-hidden='true'></span>
+								</div>
+								<div id="valida_confirmar-senha" class="col-md-3">
+									<label for="password">Confirmar Senha:</label>
+									<input value="<?=$view_request['password'];?>" type="password"  class="form-control col-md-5" id="confirsenha" name="password" placeholder="Senha" onkeydown="validarSenha();" />
+									<span id="valida_confirmar-senha_icon" class='form-control-feedback' aria-hidden='true'></span>
+								</div>
+
+							</div>
+							<div class="form-group">
+
+							</div>
+							<div class="form-group">
+								<div id="valida_email" class="col-md-12">
+									<label for="exampleInputEmail1">Email: *</label>
+									<input value="<?=$view_email;?>" type="email" class="form-control" id="exampleInputEmail1" name="Email" placeholder="Email" disabled="disabled"/>
+								</div>
+							</div>
+							<div class="form-group ">
+								<div class="col-md-4">
+									<label>Estado: *</label>
+									<select value="<?=$view_request['Estado'];?>" name="Estado" class="form-control">
+										<?php   foreach($view_estados as $es){ ?>
+
+										<option value="<?=$es->id;?>"><?=$es->sigla;?></option>
+										<?php } ?>
+									</select>
+								</div>
+								<div id="valida_telefone" class="col-md-4">
+									<label for="itelefone">Telefone: *</label>
+									<input id="itelefone" value="<?=$view_request['telefone'];?>" type="text" required="required" placeholder="(DD)9 9999-9999" class="form-control col-md-5" id="telefone_id" name="telefone" placeholder="Senha" onblur="validaTelefone(this.value);" />
+									<span id="valida_telefone_icon" class='form-control-feedback' aria-hidden='true'></span>
+								</div>
+							</div>
+							
+						</div>
+						<div id="parte_2">
+							<div class="form-group has-feedback">
+								<div class="col-md-6">
+									<label class="control-label" for="iformacao">Formação: *</label>
+									<input value="<?=$view_request['Formacao'];?>" type="text" required="required" class="form-control" id="iformacao" name="Formacao" placeholder="Formação Academica" />
+								</div>
+								<div class="col-md-6">
+									<label class="control-label" for="iarea">Aréa de Atuação: *</label>
+									<input value="<?=$view_request['Area'];?>" type="text" required="required" class="form-control" id="iarea" name="Area" placeholder="Campo de Atuação" />
+								</div>
+								<div class="col-md-7">
+									<label class="control-label" for="igrupo">Grupo de Participação: </label>
+									<input value="<?=$view_request['Grupo'];?>" type="text" class="form-control" id="igrupo" name="Grupo"  placeholder="Nome do grupo de pesquiesa/extensão!" />
+								</div>
+								
+								<div class="col-md-5">
+									<label class="control-label" for="ipalavra">Palavra: </label>
+									<input value="<?=$view_request['Palavra'];?>" type="text" class="form-control" id="ipalavra" name="Palavra" placeholder="Palavra chave" />
+								</div>
+								<div class="col-md-12">
+									<label class="control-label" for="ilattes">Curriculum Lattes: *</label>
+									<input value="<?=$view_request['Lattes'];?>" type="text" required="required" class="form-control" id="ilattes" name="Lattes" placeholder="Endereço do Lattes" />
+								</div>
+								<div class="col-md-12">
+									<label class="control-label" for="icampus">Instituição de Ensino: *</label>
+									<input value="<?=$view_request['Campus'];?>" type="text" required="required" class="form-control" id="icampus" name="Campus" placeholder="Universidade" />
+								</div>
+								<div class="col-md-12">
+									<label class="control-label" for="idescricao">Descrição: </label>
+									<textarea value="<?=$view_request['Descricao'];?>" type="textarea" class="form-control" id="idescricao" name="Descricao" placeholder="Fale um pouco sobre você..."></textarea>
+								</div>
+								<div class="col-md-12 col-md-offset-4">
+									<label class="control-label" for="idescricao">Defina seu perfil de usuario: </label>
+									<?php foreach ($view_roles as $key => $value) {?>
+											<div class="radio">
+											  <label>
+											    <input type="radio" name="role" required="required" value="<?=$value->id;?>" aria-label="fsdd"/><?=$value->role;?>
+											  </label>
+											</div>
+									<?php } ?>
+								</div>
+								<div>
+									<input type="text" id="id_google" name="nid_google" style="display: none;" />
+									<input type="text" id="id_facebook" name="nid_facebook" style="display: none;"/>
+								</div>
+						</div>
+						<div class="form-group">
+								
+								<div class="col-md-3 col-md-offset-3">
+									<a href="<?=SITE?>" type="submit" class="btn btn-danger">Voltar</a>
+								</div>
+								<div class="col-md-3 col-md-offset-2">
+									<button id="btn_cad" onclick="validaNome();" disabled="disabled" class="btn btn-success">Avançar</button>
+								</div>
+							</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
