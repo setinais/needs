@@ -45,7 +45,7 @@ class Tools
 			'password' => $password
 		];
 	}
-
+     
 	/**
 	 * Processo de tratamento para o mecanismo MVC
 	 * @param string $input     String que será convertida

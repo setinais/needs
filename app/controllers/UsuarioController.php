@@ -40,7 +40,7 @@ class UsuarioController extends \Hxphp\System\Controller{
                 $this->load('Helpers\Alert',[
                     'success',
                     'Cadastro realizado com sucesso!',
-                    'Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>',
+                    'Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
                     ]);
             }
         }
@@ -82,14 +82,26 @@ class UsuarioController extends \Hxphp\System\Controller{
         $post = $this->request->post();
 
         if(!empty($post)){
-
+            $cad_chave = Chave::cadastrarChave($post['email'].'@ifto.edu.br');
+            if($cad_chave->status == false){
+                $this->load('Helpers\Alert',[
+                    'danger',
+                    'Ops! Não foi possivel efetuar sua solicitação. Verifique os erros abaixo!',
+                    $cad_chave->errors
+                    ]);
+            }else{
+                $this->load('Helpers\Alert',[
+                    'success',
+                    'Cadastro realizado com sucesso!',
+                    '<strong>Enviado com Sucesso.</strong> Esta chave tem validade de 48h para o email: <strong>'.Email::find_by_id($cad_chave->chave->email_id)->email.'</strong>. Por favor verifique sua Caixa de Entrada ou de Span! Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
+                    
+                    ]);
+            }
         }
 
-        $this->view->setFile('SolicitarChave')->setHeader('HeaderGeneric')
-        ->setAssets('css',$this->configs->baseURI.'public/css/index.css')
-        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados)->setVar('reload', $this->reloading);
-        if(Email::verificarEmail($email)){
-            $token = Tools::newToken();
+        $this->view->setFile('SolicitarChave')->setHeader('HeaderGeneric')->setAssets('css',$this->configs->baseURI.'public/css/index.css')->setVar('request' , $this->callback);
+        /*if(Email::verificarEmail($email)){
+            $token = ;
             $status = $this->email->enviar($email,"Cadastro de Demandande/Extensionista","\nFaça seu cadastro atraves do link:\n".BASE."register/token/".$token,["remetente" => REMETENTE,"email" => EMAIL_REMETENTE]);
             //$status[0] <- coloca no if;
             if(true){
@@ -100,7 +112,7 @@ class UsuarioController extends \Hxphp\System\Controller{
             }
         }else{
             echo "JaExiste";
-        }
+        }*/
     }
     public function tokenAction($token){
         if(empty($token)){
