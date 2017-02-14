@@ -162,34 +162,6 @@ function validaTelefone(nome){
 		return false;
 	}
 }
-function solicitarCadastro(email,endereco){
-	email = email+"@ifto.edu.br";
-	$.ajax({
-		url: endereco+email,
-		dataType: 'html',
-	})
-	.done(function(res) {
-		$("#errors").show('fast');
-		if(res == "True"){
-			$("#errors").attr('class', 'alert alert-success');
-			$("#errors").html("<strong>Enviado com Sucesso.</strong> Esta chave tem validade de 48h para o email: <strong>"+email+"</strong>. Por favor verifique sua Caixa de Entrada ou de Span!" );
-		}else if(res == "False"){
-			$("#errors").attr('class', 'alert alert-danger');
-			$("#errors").html("<strong>Email não enviado</strong>, verifique a conexão com a internet!");
-		}else if(res == "JaExiste"){
-			$("#errors").attr('class', 'alert alert-warning');
-			$("#errors").html("<strong>Este Email ja tem cadastro!</strong>");
-		}
-		
-	})
-	.fail(function() {
-		console.log("error");
-	})
-	.always(function() {
-		console.log("complete");
-	});
-	
-}
 function chamaTudo(){
 	validarSenha($("#nome").val());
 	validaNome($("#sobrenome").val());

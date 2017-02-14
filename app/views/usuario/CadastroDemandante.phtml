@@ -105,16 +105,17 @@
 		</div>
 	</div>
 	<div class="row col-md-6 col-md-offset-3">
+		<form action="<?=BASE?>usuario/solicitarChave/" method="post">
 			<label for="email_institucional">Para Pesquisador/Extensionista, Solicite aqui seu cadastro!</label>
 			<div class="input-group">
 				<div class="input-group-btn">
-				<button class="btn btn-success" onclick="solicitarCadastro($('#email_institucional').val(),'<?=BASE?>usuario/solicitarToken/');">Enviar</button>
+				<button class="btn btn-success"">Enviar</button>
 				</div>
 				<input id="email_institucional" type="text" name="email_institucional2" class="form-control" placeholder="Email Institucional" aria-describedby="basic-addon2" required="required">
 				<span class="input-group-addon" id="basic-addon2">@ifto.edu.br</span>
 
 			</div>
-		<div id="errors" class="alert" role="alert" style="display: none;"></div>
+		</form>
 	</div>
 	<div id="reload"><?=$view_reload;?></div>
 </section>

@@ -2,18 +2,19 @@
 class UsuarioController extends \Hxphp\System\Controller{
 
     private $callback = null;
-    private $chave;
+    private $chave = "";
     private $reloading = null;
+
     public function verificarEnderecoAction($pagina,$chave = null){
         if(!is_null($chave)){
             $this->chave = $chave;
        }
        if(empty($_REQUEST)){
             $this->callback = null;
-            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina);
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$chave);
        }else{
             $this->callback = $_REQUEST;
-            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina);
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$chave);
        }
 
     }
@@ -76,7 +77,17 @@ class UsuarioController extends \Hxphp\System\Controller{
                 ));
         }
     }
-    public function solicitarTokenAction($email){
+    public function solicitarChaveAction(){
+
+        $post = $this->request->post();
+
+        if(!empty($post)){
+
+        }
+
+        $this->view->setFile('SolicitarChave')->setHeader('HeaderGeneric')
+        ->setAssets('css',$this->configs->baseURI.'public/css/index.css')
+        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados)->setVar('reload', $this->reloading);
         if(Email::verificarEmail($email)){
             $token = Tools::newToken();
             $status = $this->email->enviar($email,"Cadastro de Demandande/Extensionista","\nFaça seu cadastro atraves do link:\n".BASE."register/token/".$token,["remetente" => REMETENTE,"email" => EMAIL_REMETENTE]);
