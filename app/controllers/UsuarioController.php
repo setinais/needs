@@ -3,6 +3,7 @@ class UsuarioController extends \Hxphp\System\Controller{
 
     private $callback = null;
     private $chave;
+    private $reloading = null;
     public function verificarEnderecoAction($pagina,$chave = null){
         if(!is_null($chave)){
             $this->chave = $chave;
@@ -18,27 +19,34 @@ class UsuarioController extends \Hxphp\System\Controller{
     }
     public function cadastroDemandanteAction(){
 
-        $estados = Estado::getSelectStates();
-        $this->view->setFile('CadastroDemandante')->setHeader('HeaderGeneric')
-        ->setAssets('css',[$this->configs->baseURI.'public/css/index.css',$this->configs->baseURI.'public/css/Cadastro.css'])
-        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados);
-
          $this->request->setCustomFilters([
-            'email' => FILTER_VALIDATE_EMAIL
+            'email_id' => FILTER_VALIDATE_EMAIL
             ]);
             $post = $this->request->post();
         if(!empty($post)){
-            
-            $post['funcoe'] = 'Demandante';
+            $post['funcoe_id'] = 'Demandante';
             $cadastrarUser = Usuario::cadastrarUsuario($post);
             if($cadastrarUser->status === false){
+                $this->callback = $post;
+                $this->reloading = '<script type="text/javascript" src="'.$this->configs->baseURI.'/public/js/IfReload.js"></script>';
                 $this->load('Helpers\Alert',[
                     'danger',
                     'Ops! Não foi possivel efetuar seu cadastro. Verifique os erros abaixo',
                     $cadastrarUser->errors
                     ]);
+
+            }else{
+                $this->load('Helpers\Alert',[
+                    'success',
+                    'Cadastro realizado com sucesso!',
+                    'Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>',
+                    ]);
             }
         }
+         $estados = Estado::getSelectStates();
+        $this->view->setFile('CadastroDemandante')->setHeader('HeaderGeneric')
+        ->setAssets('css',[$this->configs->baseURI.'public/css/index.css',$this->configs->baseURI.'public/css/Cadastro.css'])
+        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados)->setVar('reload', $this->reloading);
     }
     public function cadastroPEAction(){
         $cadastrar = new Validator($_REQUEST);

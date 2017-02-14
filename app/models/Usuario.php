@@ -23,27 +23,31 @@ class Usuario extends \HXPHP\System\Model{
 
 		static $validates_presence_of = [
 			[
-			'nome',
-			'message' => 'O <strong>Nome</strong> é um campo obrigatório.'
+				'nome',
+				'message' => 'O <strong>Nome</strong> é um campo obrigatório.'
 			],
 			[
-			'usuario',
-			'message' => '<strong>Usuario</strong> é um campo obrigatório.'
+				'usuario',
+				'message' => '<strong>Usuario</strong> é um campo obrigatório.'
 			],
 			[
-			'senha',
-			'message' => '<strong>Senha</strong> é um campo obrigatório.'
+				'senha',
+				'message' => '<strong>Senha</strong> é um campo obrigatório.'
 			],
 			[
-			'telefone',
-			'mnessage' => '<strong>Telefone</strong> é um campo obrigatório.'
+				'telefone',
+				'message' => '<strong>Telefone</strong> é um campo obrigatório.'
+			],
+			[
+				'email_id',
+				'message' => '<strong>E-mail</strong> é um campo obrigatório.'
 			]
 		];
-		static $validate_uniqueness_of = [
+		static $validates_uniqueness_of  = [
 			[
-				['username'],
-				'message' => 'Já exixte um usuário cadastrado com este Username.'
-			],
+				['usuario'],
+				'message' => 'Já existe um usuário cadastrado com este Usuario.'
+			]
 		];
 		/**
 		 * Método responsável por retornar um array com as IDs e nomes dos usuários
@@ -67,37 +71,37 @@ class Usuario extends \HXPHP\System\Model{
 			$usuario->errors = [];
 
 			//Pesquisar id da Função
-			$funcoe = Funcoe::find_by_funcao($post['funcoe']);
+			$funcoe = Funcoe::find_by_funcao($post['funcoe_id']);
 			$email = Email::find_by_email($post['email_id']);
-			if(!empty($email)){
-				array_push($usuario->errors, '<strong>Email</strong> já esta cadastrado.');
+			if(!empty($email) || empty($post['email_id'])){
+				array_push($usuario->errors, '<strong>E-mail</strong> já esta cadastrado.');
 				return $usuario;
 			}else{
 				$email = Email::cadastrarEmail($post['email_id']);
-				$post['email_id'] = Email::find_by_email($post['email_id'])->id;
-			}
+				
+				$post['email_id'] = $email->id;
+				
+				$senha = \HXPHP\System\Tools::hashHX($post['senha']);
+				$post = array_merge($post, [
+					'funcoe_id' => $funcoe->id,
+					'status' => 1,
+					'senha' => $senha['password'],
+					'salt' => $senha['salt']
+					]);
+				$cadastrar = self::create($post);
+				if($cadastrar->is_valid()){
+					$usuario->user = $cadastrar;
+					$usuario->status = true;
+					return $usuario;
+				}
 
-			$senha = \HXPHP\System\Tools::hashHX($post['senha']);
-			$post = array_merge($post, [
-				'funcoe_id' => $funcoe->id,
-				'status' => 1,
-				'senha' => $senha['password'],
-				'salt' => $senha['salt'],
-				]);
-			
-			$cadastrar = self::create($post);
-
-			if($cadastrar->is_valid()){
-				$usuario->user = $cadastrar;
-				$usuario->status = true;
+				$errors = $cadastrar->errors->get_raw_errors();
+				foreach ($errors as $campo => $messagem) {
+					array_push($usuario->errors, $messagem[0]);
+				}
 				return $usuario;
 			}
-
-			$errors = $cadastrar->errors->get_raw_errors();
-			foreach ($errors as $campo => $messagem) {
-				array_push($usuario->errors, $messagem[0]);
-			}
-			return $usuario;
+			
 		}
 		public function searchResult($search){
 			$final = $this->tratamentoSearch($search);
