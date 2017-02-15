@@ -27,7 +27,7 @@ class GlobalConfig
 		$this->site->protocol = ($https && $https != 'off') ? 'https' : 'http';
 		$this->site->host = $request->server('HTTP_HOST');
 		$this->site->url = $this->site->protocol . '://' . $this->site->host;
-
+		
 		//Models
 		$this->models->directory = APP_PATH . 'models' . DS;
 

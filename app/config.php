@@ -14,6 +14,23 @@
 			'dbname' => 'needs',
 			'charset' => 'utf8'
 		]);
+	$configs->env->development->mail->setFrom([
+			'from' => 'Remetente',
+			'from_mail' => 'vinnicyus@vinnilog.com.br'
+		]);
+	$configs->env->development->menu->setConfigs([
+			'container' => 'nav',
+			'container_class' => 'navbar navbar-default',
+			'menu_class' => 'nav navbar-nav'
+		]);
+
+	$configs->env->development->menu->setMenus([
+			'Home/home' => '%siteURL%',
+			'Subpasta/folder-open' => [
+				'Home/home' => '%baseURI%/admin/have-fun/',
+				'Teste/home' => '%baseURI%/admin/index/',
+			]
+		]);
 
 	/*
 		//Globais
@@ -47,8 +64,8 @@
 		$configs->env->development->menu->setMenus([
 			'Home/home' => '%siteURL%',
 			'Subpasta/folder-open' => [
-				'Home/home' => '%siteURI%/admin/have-fun/',
-				'Teste/home' => '%siteURI%/admin/index/',
+				'Home/home' => '%baseURI%/admin/have-fun/',
+				'Teste/home' => '%baseURI%/admin/index/',
 			]
 		]);
 
@@ -58,7 +75,7 @@
 		//Configurações de Ambiente - Produção
 		$configs->env->add('production');
 
-		$configs->env->production->siteURI = '/';
+		$configs->env->production->baseURI = '/';
 
 		$configs->env->production->datasite->setConnectionData([
 			'driver' => 'mysql',

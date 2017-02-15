@@ -23,12 +23,12 @@
 							<div class="row col-md-offset-5 col-md-4"><span class="label label-primary">-----OU-----</span></div>
 						</div>
 						
-						<form method="post" class="form-horizontal" action="<?=BASE?>usuario/validandoToken/<?=$view_token;?>" role="form">
+						<form method="post" class="form-horizontal" action="<?=BASE?>usuario/CadastroPE/<?=$view_token;?>" role="form">
 							<div class="form-group"></div>
 							<div class="form-group has-feedback">
 								<div id="valida_nome" class="col-md-4 ">
 									<label class="control-label" for="username">Nome: *</label>
-									<input type="text" required="required" class="form-control" id="nome" name="Nome" value="<?=$view_request['Nome'];?>" placeholder="Nome Completo" onblur="validaNome(this.value);" />
+									<input type="text" required="required" class="form-control" id="nome" name="nome" value="<?=$view_request['nome'];?>" placeholder="Nome Completo" onblur="validaNome(this.value);" />
 									<span id="valida_nome_icon" class='form-control-feedback' aria-hidden='true'></span>
 
 
@@ -36,24 +36,24 @@
 								
 								<div id="valida_sobre" class="col-md-8">
 									<label class="control-label" for="username">Sobrenome: *</label>
-									<input value="<?=$view_request['Sobrenome'];?>" type="text" required="required" class="form-control" id="sobrenome" name="Sobrenome" onblur="validaSobre(this.value);" placeholder="Nome Completo"/>
+									<input value="<?=$view_request['sobrenome'];?>" type="text" required="required" class="form-control" id="sobrenome" name="sobrenome" onblur="validaSobre(this.value);" placeholder="Nome Completo"/>
 									<span id="valida_sobre_icon" class='form-control-feedback' aria-hidden='true'></span>
 								</div>
 							</div>
 							<div id="dados_logon" class="form-group has-feedback">
 								<div id="valida_usu" class="col-md-3">
 									<label for="username">Usuario: *</label>
-									<input value="<?=$view_request['Usuario'];?>" type="text" class="form-control" id="usuario" name="Usuario" placeholder="Usuário" onblur="validaUsu(this.value);" />
+									<input value="<?=$view_request['usuario'];?>" type="text" class="form-control" id="usuario" name="usuario" placeholder="Usuário" onblur="validaUsu(this.value);" />
 									<span id="valida_usu_icon" class='form-control-feedback' aria-hidden='true'></span>	
 								</div>
 								<div id="valida_senha" class="col-md-3">
 									<label for="password">Senha: *</label>
-									<input value="<?=$view_request['Senha'];?>" type="password"  class="form-control" id="senha" name="Senha" placeholder="Senha" onblur="validaSenha(this.value);"/>
+									<input value="<?=$view_request['senha'];?>" type="password"  class="form-control" id="senha" name="senha" placeholder="Senha" onblur="validaSenha(this.value);"/>
 									<span id="valida_senha_icon" class='form-control-feedback' aria-hidden='true'></span>
 								</div>
 								<div id="valida_confirmar-senha" class="col-md-3">
 									<label for="password">Confirmar Senha:</label>
-									<input value="<?=$view_request['password'];?>" type="password"  class="form-control col-md-5" id="confirsenha" name="password" placeholder="Senha" onkeydown="validarSenha();" />
+									<input value="<?=$view_request['salt'];?>" type="password"  class="form-control col-md-5" id="confirsenha" name="salt" placeholder="Senha" onkeydown="validarSenha();" />
 									<span id="valida_confirmar-senha_icon" class='form-control-feedback' aria-hidden='true'></span>
 								</div>
 
@@ -64,13 +64,13 @@
 							<div class="form-group">
 								<div id="valida_email" class="col-md-12">
 									<label for="exampleInputEmail1">Email: *</label>
-									<input value="<?=$view_email;?>" type="email" class="form-control" id="exampleInputEmail1" name="Email" placeholder="Email" disabled="disabled"/>
+									<input value="<?=$view_email;?>" type="email" class="form-control" id="exampleInputEmail1" name="email" placeholder="Email" disabled="disabled"/>
 								</div>
 							</div>
 							<div class="form-group ">
 								<div class="col-md-4">
 									<label>Estado: *</label>
-									<select value="<?=$view_request['Estado'];?>" name="Estado" class="form-control">
+									<select value="<?=$view_request['estado_id'];?>" name="estado_id" class="form-control">
 										<?php   foreach($view_estados as $es){ ?>
 
 										<option value="<?=$es->id;?>"><?=$es->sigla;?></option>
@@ -89,39 +89,39 @@
 							<div class="form-group has-feedback">
 								<div class="col-md-6">
 									<label class="control-label" for="iformacao">Formação: *</label>
-									<input value="<?=$view_request['Formacao'];?>" type="text" required="required" class="form-control" id="iformacao" name="Formacao" placeholder="Formação Academica" />
+									<input value="<?=$view_request['formacao'];?>" type="text" required="required" class="form-control" id="iformacao" name="formacao" placeholder="Formação Academica" />
 								</div>
 								<div class="col-md-6">
 									<label class="control-label" for="iarea">Aréa de Atuação: *</label>
-									<input value="<?=$view_request['Area'];?>" type="text" required="required" class="form-control" id="iarea" name="Area" placeholder="Campo de Atuação" />
+									<input value="<?=$view_request['area'];?>" type="text" required="required" class="form-control" id="iarea" name="area" placeholder="Campo de Atuação" />
 								</div>
 								<div class="col-md-7">
 									<label class="control-label" for="igrupo">Grupo de Participação: </label>
-									<input value="<?=$view_request['Grupo'];?>" type="text" class="form-control" id="igrupo" name="Grupo"  placeholder="Nome do grupo de pesquiesa/extensão!" />
+									<input value="<?=$view_request['grupo'];?>" type="text" class="form-control" id="igrupo" name="grupo"  placeholder="Nome do grupo de pesquiesa/extensão!" />
 								</div>
 								
 								<div class="col-md-5">
 									<label class="control-label" for="ipalavra">Palavra: </label>
-									<input value="<?=$view_request['Palavra'];?>" type="text" class="form-control" id="ipalavra" name="Palavra" placeholder="Palavra chave" />
+									<input value="<?=$view_request['palavra'];?>" type="text" class="form-control" id="ipalavra" name="palavra" placeholder="Palavra chave" />
 								</div>
 								<div class="col-md-12">
 									<label class="control-label" for="ilattes">Curriculum Lattes: *</label>
-									<input value="<?=$view_request['Lattes'];?>" type="text" required="required" class="form-control" id="ilattes" name="Lattes" placeholder="Endereço do Lattes" />
+									<input value="<?=$view_request['lattes'];?>" type="text" required="required" class="form-control" id="ilattes" name="lattes" placeholder="Endereço do Lattes" />
 								</div>
 								<div class="col-md-12">
 									<label class="control-label" for="icampus">Instituição de Ensino: *</label>
-									<input value="<?=$view_request['Campus'];?>" type="text" required="required" class="form-control" id="icampus" name="Campus" placeholder="Universidade" />
+									<input value="<?=$view_request['campus'];?>" type="text" required="required" class="form-control" id="icampus" name="campus" placeholder="Universidade" />
 								</div>
 								<div class="col-md-12">
 									<label class="control-label" for="idescricao">Descrição: </label>
-									<textarea value="<?=$view_request['Descricao'];?>" type="textarea" class="form-control" id="idescricao" name="Descricao" placeholder="Fale um pouco sobre você..."></textarea>
+									<textarea value="<?=$view_request['descricao'];?>" type="textarea" class="form-control" id="idescricao" name="descricao" placeholder="Fale um pouco sobre você..."></textarea>
 								</div>
 								<div class="col-md-12 col-md-offset-4">
 									<label class="control-label" for="idescricao">Defina seu perfil de usuario: </label>
 									<?php foreach ($view_roles as $key => $value) {?>
 											<div class="radio">
 											  <label>
-											    <input type="radio" name="role" required="required" value="<?=$value->id;?>" aria-label="fsdd"/><?=$value->role;?>
+											    <input type="radio" name="funcoe_id" required="required" value="<?=$value->id;?>" aria-label=""/><?=$value->funcao;?>
 											  </label>
 											</div>
 									<?php } ?>

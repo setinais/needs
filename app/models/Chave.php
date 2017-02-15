@@ -68,7 +68,7 @@ class Chave extends \HXPHP\System\Model{
 	}
 	public static function getChave($token){
 		Chave::atualizandoChaves();
-		$select_token = self::find_by_token($token);
+		$select_token = self::find_by_chave($token);
 		return $select_token;
 	}
 	public static function validarChave($token){

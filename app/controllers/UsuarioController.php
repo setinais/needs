@@ -2,19 +2,25 @@
 class UsuarioController extends \Hxphp\System\Controller{
 
     private $callback = null;
-    private $chave = "";
+    private $chave = null;
     private $reloading = null;
 
-    public function verificarEnderecoAction($pagina,$chave = null){
+    private function setChave($chave){
+        $this->chave = Chave::getChave($chave);
+        if(empty($this->chave)){
+            $this->redirectTo($this->configs->baseURI);
+        }
+    }
+    public function verificarEnderecoAction($pagina,$chave){
         if(!is_null($chave)){
-            $this->chave = $chave;
+           $this->setChave($chave);
        }
        if(empty($_REQUEST)){
             $this->callback = null;
-            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$chave);
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$this->chave->chave);
        }else{
             $this->callback = $_REQUEST;
-            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$chave);
+            $this->redirectTo($this->configs->baseURI.'usuario'.DS.$pagina.DS.$this->chave->chave);
        }
 
     }
@@ -44,40 +50,75 @@ class UsuarioController extends \Hxphp\System\Controller{
                     ]);
             }
         }
-         $estados = Estado::getSelectStates();
+        $estados = Estado::getSelectStates();
         $this->view->setFile('CadastroDemandante')->setHeader('HeaderGeneric')
         ->setAssets('css',[$this->configs->baseURI.'public/css/index.css',$this->configs->baseURI.'public/css/Cadastro.css'])
         ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastro.js')->setVar('request' , $this->callback)->setVar('estados' , $estados)->setVar('reload', $this->reloading);
     }
-    public function cadastroPEAction(){
-        $cadastrar = new Validator($_REQUEST);
-        $cadastrar->field_filledIn($_REQUEST);
-        if($cadastrar->valid && Email::verificarEmail($_REQUEST['Email'])){
-            $senha = Tools::hashHX($_REQUEST['password']);
-            $_REQUEST['password'] = $senha['password'];
-            $_REQUEST['salt'] = $senha['salt'];
-            $_REQUEST['status'] = 1;
-                $email_id = Email::cadastrarEmail($_REQUEST['Email']);
-                $attributes = array('full_name' => $_REQUEST['Nome'],'second_name' => $_REQUEST['Sobrenome'], 'username' => $_REQUEST['Usuario'],'state_id' => $_REQUEST['Estado'], 'password' => $_REQUEST['password'], 'salt' => $_REQUEST['salt'], 'obs' => 'Null', 'status' => $_REQUEST['status'], 'role_id' => $_REQUEST['role'],'email_id' => $email_id->id,'telefone' => $_REQUEST['telefone']);
-                if(User::inserirUser($attributes)){
-                    $this->redirectTo(BASE);
-                }else{
-                    echo "Sem conexão com a Internet, tente mais tarde!";
-                }
+    public function cadastroPEAction($chave){
+        $this->setChave($chave);
+        if($this->chave->status == 'Liberada'){
+        $this->request->setCustomFilters([
+            'email_id' => FILTER_VALIDATE_EMAIL
+            ]);
+            $post = $this->request->post();
+        if(!empty($post)){
+            $post_user = [];
+            $post_perfil = [];
+            $post_user = array_merge($post_user, 
+                [
+                    'nome' => $post['nome'],
+                    'usuario' => $post['usuario'],
+                    'sobrenome' => $post['sobrenome'],
+                    'senha' => $post['senha'],
+                    'salt' => $post['salt'],
+                    'telefone' => $post['telefone'],
+                    'status'=>1 => $post['status'],
+                    'estado_id' => $post['estado_id'],
+                    'funcoe_id' => $post['funcoe_id'],
+                    'email_id' => $post['email_id']
+                    ]);
+            $post_perfil = array_merge($post_perfil, 
+                [
+                    'formacao' => $post['formacao'],
+                    'area' => $post['area'],
+                    'descricao' => $post['descricao'],
+                    'lattes' => $post['lattes'],
+                    'grupo' => $post['grupo'],
+                    'palavra' => $post['palavra'],
+                    'campus'=> $post['campus'],
+                    'user_id' => $post['user_id']
+                );
+            $cadastrarUser = Perfil::cadastrarPerfil($post);
+            /*if($cadastrarUser->status === false){
+                $this->callback = $post;
+                $this->reloading = '<script type="text/javascript" src="'.$this->configs->baseURI.'/public/js/IfReload.js"></script>';
+                $this->load('Helpers\Alert',[
+                    'danger',
+                    'Ops! Não foi possivel efetuar seu cadastro. Verifique os erros abaixo',
+                    $cadastrarUser->errors
+                    ]);
+
+            }else{
+                $this->load('Helpers\Alert',[
+                    'success',
+                    'Cadastro realizado com sucesso!',
+                    'Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
+                    ]);
+            }*/
+        }
+        $estados = Estado::getSelectStates();
+        $this->view->setFile('CadastroPE')->setHeader('HeaderGeneric')
+        ->setAssets('css',$this->configs->baseURI.'public/css/index.css')
+        ->setAssets('js',$this->configs->baseURI.'public/js/ValidacaoCadastroPE-EP.js')->setVar('request' , $this->callback)->setVar('estados' , $estados)->setVar('roles', Funcoe::getRoles())->setVar('email',$this->chave->email->email)->setVar('token',$this->chave->chave);
         }else{
-            $data['request'] = $_REQUEST;
-            $data['message'] = $cadastrar->getErrors();
-            $data['estados'] = State::getSelectStates();
-            $data['roles'] = Role::getRoles();
-            $this->view('CadastroPE',$data,true,'Generic','',array(
-                CSS.'index.css'
-                ),
-            array(
-                JS.'Validacoes/ValidacaoCadastroPE-EP.js'
-                ));
+            //Chave invalida ow vencida;
         }
     }
     public function solicitarChaveAction(){
+        $this->request->setCustomFilters([
+            'email' => FILTER_VALIDATE_EMAIL
+            ]);
 
         $post = $this->request->post();
 
@@ -90,29 +131,25 @@ class UsuarioController extends \Hxphp\System\Controller{
                     $cad_chave->errors
                     ]);
             }else{
+                $email = Email::find_by_id($cad_chave->chave->email_id);
+                $enviar_email = new \HXPHP\System\Services\Email;
+                $status = $enviar_email->send($email->email,"Cadastro DemandaAi","\nFaça seu cadastro atraves do link:\n".$this->configs->siteURL.$this->configs->baseURI."usuario/CadastroPE/".$cad_chave->chave,$configs->env->development->mail->getFrom());
+                if($status){
                 $this->load('Helpers\Alert',[
                     'success',
                     'Cadastro realizado com sucesso!',
-                    '<strong>Enviado com Sucesso.</strong> Esta chave tem validade de 48h para o email: <strong>'.Email::find_by_id($cad_chave->chave->email_id)->email.'</strong>. Por favor verifique sua Caixa de Entrada ou de Span! Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
+                    '<strong>Enviado com Sucesso.</strong> Esta chave tem validade de 48h para o email: <strong>'.$email->email.'</strong>. Por favor verifique sua Caixa de Entrada ou de Span! Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
                     
                     ]);
+                }else{
+                    $this->load('Helpers\Alert',[
+                    'danger',
+                    'Ops! Não foi possivel enviar seu e-mail!',
+                    '<strong>Aperte F5 para solicitar novamente!</strong>']);
+                }
+
             }
         }
-
-        $this->view->setFile('SolicitarChave')->setHeader('HeaderGeneric')->setAssets('css',$this->configs->baseURI.'public/css/index.css')->setVar('request' , $this->callback);
-        /*if(Email::verificarEmail($email)){
-            $token = ;
-            $status = $this->email->enviar($email,"Cadastro de Demandande/Extensionista","\nFaça seu cadastro atraves do link:\n".BASE."register/token/".$token,["remetente" => REMETENTE,"email" => EMAIL_REMETENTE]);
-            //$status[0] <- coloca no if;
-            if(true){
-                Chave::cadastrarSolicitcaoToken($email,$token);
-                echo "True";   
-            }else{
-                echo "False";
-            }
-        }else{
-            echo "JaExiste";
-        }*/
     }
     public function tokenAction($token){
         if(empty($token)){

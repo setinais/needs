@@ -12,7 +12,7 @@ abstract class AbstractEnvironment
 	{
 		//Configurações variáveis por ambiente
 		$this->baseURI = '/hxphp/';
-
+		
 		$load = new LoadModules;
 		return $load->loadModules($this);
 	}
