@@ -103,6 +103,19 @@ class Usuario extends \HXPHP\System\Model{
 			}
 			
 		}
+		public function logar(array $dados){
+        	$user = self::find_by_username($post['usuario']);
+        	if(!is_null($user)){
+        		$password = \HXPHP\System\Tools::hashHX($post['senha'],$user->salt);
+        		if(TentativasLogon::CheckTentativa($user->id)){
+	        		if($password['password'] === $user->senha){
+	        			TentativasLogon::LimparTentativas($user->id);
+	        		}else{
+	        			TentativasLogon::ArmazenarTentativa($user->id);
+	        		}
+	        	}
+        	}
+    	}
 		public function searchResult($search){
 			$final = $this->tratamentoSearch($search);
 			if($final != false){

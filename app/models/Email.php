@@ -8,6 +8,11 @@ class Email extends \HXPHP\System\Model
 		array('usuario'),
 		array('chave')
 		);
+	 /*static $validates_format_of = array(
+ 4     array('email', 'with' =>
+ 5       '/^[^0-9][A-z0-9_]+([.][A-z0-9_]+)*[@][A-z0-9_]+([.][A-z0-9_]+)*[.][A-z]{2,4}$/')
+ 8   );*/
+
 	public static function verificarEmail($email){
 			$user_exist = self::find_by_email($email);
 			if(empty($user_exist)){

@@ -65,6 +65,8 @@ class UsuarioController extends \Hxphp\System\Controller{
         if(!empty($post)){
             $post_user = [];
             $post_perfil = [];
+            $post_google_facebook = [];
+
             $post_user = array_merge($post_user, 
                 [
                     'nome' => $post['nome'],
@@ -73,12 +75,12 @@ class UsuarioController extends \Hxphp\System\Controller{
                     'senha' => $post['senha'],
                     'salt' => $post['salt'],
                     'telefone' => $post['telefone'],
-                    'status'=>1 => $post['status'],
                     'estado_id' => $post['estado_id'],
                     'funcoe_id' => $post['funcoe_id'],
-                    'email_id' => $post['email_id']
-                    ]);
-            $post_perfil = array_merge($post_perfil, 
+                    'email_id' => $this->chave->email_id
+                ]
+            );
+             $post_perfil = array_merge($post_perfil, 
                 [
                     'formacao' => $post['formacao'],
                     'area' => $post['area'],
@@ -86,11 +88,19 @@ class UsuarioController extends \Hxphp\System\Controller{
                     'lattes' => $post['lattes'],
                     'grupo' => $post['grupo'],
                     'palavra' => $post['palavra'],
-                    'campus'=> $post['campus'],
-                    'user_id' => $post['user_id']
-                );
-            $cadastrarUser = Perfil::cadastrarPerfil($post);
-            /*if($cadastrarUser->status === false){
+                    'campus'=> $post['campus']
+                ]
+            );
+            $post_google_facebook = array_merge($post_google_facebook,
+                [
+                    'id_google' => $post['id_google'],
+                    'id_facebook' => $post['id_facebook']
+                ]
+            );
+            $cadastrarUser = Usuario::cadastrarUsuario($post_user);
+
+            $cadastrarUser->status == false;
+            if($cadastrarUser->status === false){
                 $this->callback = $post;
                 $this->reloading = '<script type="text/javascript" src="'.$this->configs->baseURI.'/public/js/IfReload.js"></script>';
                 $this->load('Helpers\Alert',[
@@ -100,12 +110,17 @@ class UsuarioController extends \Hxphp\System\Controller{
                     ]);
 
             }else{
+                $post_perfil = array_merge($post_perfil, ['user_id' => $cadastrarUser->user->id]);
+                $cadastratPerfil = Perfil::cadastrarPerfil($post_perfil);
+                $cadastrar_google_facebook = RedesSocial::cadastroRedeSocial($post_google_facebook);
                 $this->load('Helpers\Alert',[
                     'success',
                     'Cadastro realizado com sucesso!',
                     'Ir pra o <strong><a href='.$this->configs->baseURI.' >inicio</a></strong>'
                     ]);
-            }*/
+            }
+           
+            
         }
         $estados = Estado::getSelectStates();
         $this->view->setFile('CadastroPE')->setHeader('HeaderGeneric')
@@ -275,4 +290,5 @@ class UsuarioController extends \Hxphp\System\Controller{
     </script>';
         $this->view('Errors',$data,true,'Generic','',[CSS.'index.css']);
     }
+    
 }

@@ -2,6 +2,7 @@
 <section id="login-container">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2" id="login-wrapper">
+		<?php echo (isset($this->alert) ? $this->alert : ''); ?>
 			<div class="panel panel-success animated flipInY">
 				<div class="panel-heading">
 					<h3 class="panel-title text-center">     
@@ -121,14 +122,14 @@
 									<?php foreach ($view_roles as $key => $value) {?>
 											<div class="radio">
 											  <label>
-											    <input type="radio" name="funcoe_id" required="required" value="<?=$value->id;?>" aria-label=""/><?=$value->funcao;?>
+											    <input type="radio" name="funcoe_id" required="required" value="<?=$value->funcao;?>" aria-label=""/><?=$value->funcao;?>
 											  </label>
 											</div>
 									<?php } ?>
 								</div>
 								<div>
-									<input type="text" id="id_google" name="nid_google" style="display: none;" />
-									<input type="text" id="id_facebook" name="nid_facebook" style="display: none;"/>
+									<input type="text" id="id_google" name="id_google" style="display: none;" />
+									<input type="text" id="id_facebook" name="id_facebook" style="display: none;"/>
 								</div>
 						</div>
 						<div class="form-group">

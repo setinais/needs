@@ -31,7 +31,7 @@
 				'Teste/home' => '%baseURI%/admin/index/',
 			]
 		]);
-
+	$configs->env->development->auth->setURLs('/needs/home','/needs/');
 	/*
 		//Globais
 		$configs->title = 'Titulo customizado';

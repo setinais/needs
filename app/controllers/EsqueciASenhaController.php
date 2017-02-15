@@ -1,5 +1,5 @@
 <?php 
-    class EsqueciASenhaController extends Controller{
+    class EsqueciASenhaController extends \HXPHP\System\Controller{
         public function __construct(){
             parent::__construct();
             Auth::redirectCheck(true);

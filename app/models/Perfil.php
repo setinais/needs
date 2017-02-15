@@ -11,7 +11,7 @@ class Perfil extends HXPHP\System\Model
 		['profile_projetos']
 		
 	];
-	static $validates_presence_of = [
+	/*static $validates_presence_of = [
 			[
 				'formacao',
 				'message' => 'O <strong>Nome</strong> é um campo obrigatório.'
@@ -38,7 +38,7 @@ class Perfil extends HXPHP\System\Model
 				['lattes'],
 				'message' => 'Já existe um usuário com este Curriculo.'
 			]
-		];
+		];*/
 	public static function cadastrarPerfil(array $post){
 		$callback = new \stdClass;
 		$callback->perfil = null;
