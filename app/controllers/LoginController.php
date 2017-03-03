@@ -8,15 +8,17 @@
                     $configs->auth->after_logout,
                     true
                 );
-    		$this->auth->redirectCheck(true);
     	}
+        public function indexAction(){
+            $this->auth->redirectCheck(true);
+        }
         public function logarAction(){
     		$post = $this->request->post();
             
             $callback = Usuario::logar($post);
             if ($callback->status) 
             {
-                 //$this->auth->login();
+                 $this->auth->login($callback->user->id, $callback->user->usuario);
             }
             else
             {
@@ -32,6 +34,6 @@
             
         }
         public function sairAction(){
-        	Auth::logout();
+        	$this->auth->logout();
         }
     }

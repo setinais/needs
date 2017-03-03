@@ -11,7 +11,7 @@ class HomeController extends \HXPHP\System\Controller{
     		$this->auth->redirectCheck();
 	}
 	public function indexAction(){
-		$this->view('funcoes-extensionista/EditarPerfil','',true,'','',[CSS.'index.css'],[JS.'Pesquisa/funcoes.js']);
+		$this->view->setAssets('css',$this->configs->baseURI.'public/css/index.css')->setAssets('js',$this->configs->baseURI.'public/js/funcoes.js');
 	}
 	public function searchAction($search){
 

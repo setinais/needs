@@ -107,6 +107,7 @@ class Usuario extends \HXPHP\System\Model{
 			$callBack_logar = new \stdClass;
 			$callBack_logar->alert = '';
 			$callBack_logar->status = false;
+			$callBack_logar->user = null;
 
         	$user = self::find_by_usuario($dados['usuario']);
         	if(!is_null($user))
@@ -120,6 +121,7 @@ class Usuario extends \HXPHP\System\Model{
 	        			{
 	        				TentativasLogon::LimparTentativas($user->id);
 	        				$callBack_logar->status = true;
+	        				$callBack_logar->user = $user;
 	        				return $callBack_logar;
 	        			}
 	        			else
@@ -132,12 +134,12 @@ class Usuario extends \HXPHP\System\Model{
 		        	}
 		        	else
 		        	{
+		        		$user->status = 0;
+		        		$user->save(false);
 	        			$callBack_logar->alert = '<strong>Usuario</strong> bloqueado, devido a tentativas excessivas!';
 	        			return $callBack_logar;
 	        		}
         		}else{
-        			$user->status = 0;
-		        	$user->save(false);
 		        	$callBack_logar->alert = '<strong>Usuario</strong> bloqueado, devido a tentativas excessivas!';
 	        		return $callBack_logar;
         		}
