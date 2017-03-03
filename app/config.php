@@ -16,7 +16,7 @@
 		]);
 	$configs->env->development->mail->setFrom([
 			'from' => 'Remetente',
-			'from_mail' => 'vinnicyus@vinnilog.com.br'
+			'from_mail' => 'vinnicyus@rodokar.com.br'
 		]);
 	$configs->env->development->menu->setConfigs([
 			'container' => 'nav',

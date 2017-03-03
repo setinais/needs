@@ -38,6 +38,31 @@
             {
                 $error = $this->messages->getByCode($validar->code);
             }
+            else
+            {
+                $this->load('Services\PasswordRecovery', 
+                            $this->configs->site->url.$this->configs->baseURI.'recuperarsenha/redefinir/'
+                    );
+                SenhaPerdida::create([
+                        'usuario_id' => $validar->user->id,
+                        'chave' => $this->passwordrecovery->generateToken(),
+                        'IP' => $_SERVER['REMOTE_ADDR'],
+                        'status' => 0 
+                    ]);
+                $message = $this->messages->messages->getByCode('link_enviado',[
+                    'message' => [
+                            $validar->user->name,
+                            $this->passwordrecovery->link,
+                            $this->passwordrecovery->link
+                    ]
+                    ]);
+                $this->load('Services\Email');
+                $this->email->send($validar->user->email->email,'NEEDS' . $message['subject'], $message['message'] . ' Needs', 
+                    [
+                        'email' => $this->configs->mail->from_mail,
+                        'remetente' => $this->configs->mail->from
+                    ]);
+            }
         }
         else
         {
