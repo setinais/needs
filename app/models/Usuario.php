@@ -103,17 +103,49 @@ class Usuario extends \HXPHP\System\Model{
 			}
 			
 		}
-		public function logar(array $dados){
-        	$user = self::find_by_username($post['usuario']);
-        	if(!is_null($user)){
-        		$password = \HXPHP\System\Tools::hashHX($post['senha'],$user->salt);
-        		if(TentativasLogon::CheckTentativa($user->id)){
-	        		if($password['password'] === $user->senha){
-	        			TentativasLogon::LimparTentativas($user->id);
-	        		}else{
-	        			TentativasLogon::ArmazenarTentativa($user->id);
+		public static function logar($dados){
+			$callBack_logar = new \stdClass;
+			$callBack_logar->alert = '';
+			$callBack_logar->status = false;
+
+        	$user = self::find_by_usuario($dados['usuario']);
+        	if(!is_null($user))
+        	{
+        		$password = \HXPHP\System\Tools::hashHX($dados['senha'],$user->salt);
+        		if($user->status === 1)
+        		{
+        			if(TentativasLogon::CheckTentativa($user->id))
+        			{
+	        			if($password['password'] === $user->senha)
+	        			{
+	        				TentativasLogon::LimparTentativas($user->id);
+	        				$callBack_logar->status = true;
+	        				return $callBack_logar;
+	        			}
+	        			else
+	        			{
+	        				TentativasLogon::ArmazenarTentativa($user->id);
+	        				$total_tentativas =6 - TentativasLogon::CountTentativa($user->id);
+	        				$callBack_logar->alert = '<strong>Senha</strong> incorreta, voçê ainda tem '.$total_tentativas.' tentativas!';
+	        				return $callBack_logar;
+	        			}
+		        	}
+		        	else
+		        	{
+	        			$callBack_logar->alert = '<strong>Usuario</strong> bloqueado, devido a tentativas excessivas!';
+	        			return $callBack_logar;
 	        		}
-	        	}
+        		}else{
+        			$user->status = 0;
+		        	$user->save(false);
+		        	$callBack_logar->alert = '<strong>Usuario</strong> bloqueado, devido a tentativas excessivas!';
+	        		return $callBack_logar;
+        		}
+        	}
+        	else
+        	{
+        		$callBack_logar->alert = '<strong>Usuario</strong> não existente!';
+	        	return $callBack_logar;
         	}
     	}
 		public function searchResult($search){

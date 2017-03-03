@@ -10,13 +10,26 @@
                 );
     		$this->auth->redirectCheck(true);
     	}
-        public function indexAction(){
-            $this->view('index','',true,'Generic','',array(CSS.'animate.css'));
-        }
         public function logarAction(){
     		$post = $this->request->post();
-            var_dump($post);
-            //$this->auth->login();
+            
+            $callback = Usuario::logar($post);
+            if ($callback->status) 
+            {
+                 //$this->auth->login();
+            }
+            else
+            {
+                 $this->load('Helpers\Alert',[
+                    'danger',
+                    'Atenção!',
+                    $callback->alert
+                    ]);
+                $this->view->setFile('index')->setHeader('HeaderGeneric')->setAssets('css',[$this->configs->baseURI . 'public/css/animate.css',$this->configs->baseURI . 'public/css/index.css']);    
+            }
+            
+           
+            
         }
         public function sairAction(){
         	Auth::logout();
