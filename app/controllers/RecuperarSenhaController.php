@@ -57,11 +57,15 @@
                     ]
                     ]);
                 $this->load('Services\Email');
-                $this->email->send($validar->user->email->email,'NEEDS' . $message['subject'], $message['message'] . ' Needs', 
+                $envio_do_email = $this->email->send($validar->user->email->email,'NEEDS' . $message['subject'], $message['message'] . ' Needs', 
                     [
                         'email' => $this->configs->mail->from_mail,
                         'remetente' => $this->configs->mail->from
                     ]);
+                if($envio_do_email === false)
+                {
+                    $error = $this->messages->getByCode('email-nao-enviado');
+                }
             }
         }
         else
