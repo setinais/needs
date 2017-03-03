@@ -43,15 +43,16 @@
                 $this->load('Services\PasswordRecovery', 
                             $this->configs->site->url.$this->configs->baseURI.'recuperarsenha/redefinir/'
                     );
+                
                 SenhaPerdida::create([
                         'usuario_id' => $validar->user->id,
-                        'chave' => $this->passwordrecovery->generateToken(),
+                        'chave' => $this->passwordrecovery->token,
                         'IP' => $_SERVER['REMOTE_ADDR'],
                         'status' => 0 
                     ]);
-                $message = $this->messages->messages->getByCode('link_enviado',[
+                $message = $this->messages->messages->getByCode('link-enviado',[
                     'message' => [
-                            $validar->user->name,
+                            $validar->user->nome,
                             $this->passwordrecovery->link,
                             $this->passwordrecovery->link
                     ]
